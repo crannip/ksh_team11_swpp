@@ -63,6 +63,10 @@ public class PlayerBehavior : MonoBehaviour
 
     [SerializeField] private GroundFriction _currentGroundOn;
 
+
+    public Material wirepointMat;
+    public Transform respawnPos;
+
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
@@ -132,8 +136,6 @@ public class PlayerBehavior : MonoBehaviour
              (_rigidbody.linearVelocity.magnitude > maxSpeed
                 ? (_rigidbody.linearVelocity.magnitude > airMaxSpeed ? 1 : airDeaccel)
                 : 1f);
-        
-        Debug.Log(_rigidbody.linearVelocity.magnitude);
 
         if (input.magnitude < 0.1f)
         {
@@ -159,12 +161,26 @@ public class PlayerBehavior : MonoBehaviour
 
     private void ScanWirePoints()
     {
+        foreach (var i in _avilableWirePoints)
+        {
+            if (i != null)
+                i.gameObject.GetComponent<MeshRenderer>().materials[0].color = Color.white;
+        }
+        
         int hit = Physics.OverlapSphereNonAlloc(transform.position, wirePointDetectRadius, _avilableWirePoints,
             LayerMask.GetMask("WirePoint"));
 
         if (hit == 0)
         {
             _avilableWirePoints = new Collider[10];
+        }
+        else
+        {
+            foreach (var i in _avilableWirePoints)
+            {
+                if (i != null)
+                    i.gameObject.GetComponent<MeshRenderer>().materials[0].color = Color.yellow;
+            }
         }
     }
 
@@ -191,7 +207,7 @@ public class PlayerBehavior : MonoBehaviour
         {
             if (_avilableWirePoints[i] == null) continue;
 
-            if (Camera.main.WorldToScreenPoint(point.transform.position).z < minDistance)
+            if (Camera.main.WorldToScreenPoint(point.transform.position).z < 0)
             {
                 minDistance = Vector3.Distance(_avilableWirePoints[i].transform.position, transform.position);
                 point = _avilableWirePoints[i];
@@ -203,10 +219,13 @@ public class PlayerBehavior : MonoBehaviour
                 point = _avilableWirePoints[i];
             }
         }
+
+        if (Camera.main.WorldToScreenPoint(point.transform.position).z < 0)
+            return;
         
         var vec0 = transform.position - point.transform.position;
         var vec1 = Vector3.Cross(vec0, Vector3.up);
-        var vec2 = Vector3.Cross(vec1, vec0);
+        var vec2 = Vector3.Cross(vec0, vec1);
         
         _rigidbody.AddForce(vec2.normalized * forr, ForceMode.Impulse);
 
@@ -236,5 +255,14 @@ public class PlayerBehavior : MonoBehaviour
         _currentWirePoint = null;
         _lineRenderer.enabled = false;
         _isWiring = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Respawn"))
+        {
+            _rigidbody.linearVelocity = Vector3.zero;
+            transform.position = respawnPos.position;
+        }
     }
 }
