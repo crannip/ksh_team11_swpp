@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerInputProcessor : MonoBehaviour
 {
     public UnityEvent jumpEvent;
+    public UnityEvent shotEvent;
     public Vector2 MoveInput { get; private set; }
 
     public void OnMove(InputAction.CallbackContext context)
@@ -17,5 +18,11 @@ public class PlayerInputProcessor : MonoBehaviour
     {
         if (context.phase == InputActionPhase.Started) 
             jumpEvent.Invoke();
+    }
+    
+    public void OnShot(InputAction.CallbackContext context)
+    {
+        if (context.phase == InputActionPhase.Started) 
+            shotEvent.Invoke();
     }
 }
