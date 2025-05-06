@@ -16,7 +16,8 @@ public class PlayerBehavior : MonoBehaviour
     # endregion
     
     # region external properties
-    
+
+    [SerializeField] private GameObject cameraObject;
     [SerializeField] private LayerMask groundLayer;
     
     # endregion 
@@ -66,6 +67,8 @@ public class PlayerBehavior : MonoBehaviour
         var input = _inputProcessor.MoveInput.normalized;
         
         Vector3 direction = new Vector3(input.x, 0, input.y);
+        direction = Quaternion.AngleAxis(cameraObject.transform.rotation.eulerAngles.y, Vector3.up) * direction;
+        
         _rigidbody.linearVelocity += direction * (acceleration * Time.deltaTime);
 
         if (input.magnitude < 0.1f)
