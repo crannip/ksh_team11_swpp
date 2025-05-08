@@ -29,7 +29,7 @@ public class PlayerBehavior : MonoBehaviour
 
     [SerializeField] private int jumpCount;
 
-    public float min, max, forr;
+    [SerializeField] private float minDistanceConst, maxDistanceConst, wireSwingForce;
     # endregion
     
     /********************************************************************************/
@@ -197,12 +197,44 @@ public class PlayerBehavior : MonoBehaviour
     }
     private void TryConnectWire()
     { 
-        if (_avilableWirePoints[0] == null) return;
+        var point = GetAvailableWirePoint();
+
+        if (point == null) return;
+        
+        // 연결된 와이어를 통해 스윙하도록 힘을 준다.
+        _rigidbody.linearVelocity = Vector3.zero;
+        
+        var vec0 = transform.position - point.transform.position;
+        var vec1 = Vector3.Cross(vec0, Vector3.up);
+        var vec2 = Vector3.Cross(vec0, vec1);
+        
+        _rigidbody.AddForce(vec2.normalized * wireSwingForce, ForceMode.Impulse);
+
+        // 와이어 액션 상태로 바꾼다.
+        _currentWirePoint = point.transform;
+        _lineRenderer.enabled = true;
+        _isWiring = true;
+
+        // 와이어 포인트에 플레이어를 연결 시켜준다.
+        var sprjt = _currentWirePoint.GetComponent<SpringJoint>();
+        
+        var minDistance = Vector3.Distance(point.transform.position, transform.position);
+        
+        sprjt.connectedBody = _rigidbody;
+        sprjt.minDistance = minDistance / minDistanceConst;
+        sprjt.maxDistance = minDistance / maxDistanceConst;
+    }
+
+    // 현재 _availableWirePoints 배열에서 와이어 연결 가능한 포인트가 있는지 체크
+    // 연결 가능한 포인트가 없다면 null 반환
+    private Collider GetAvailableWirePoint()
+    {
+        if (_avilableWirePoints[0] == null) return null;
         
         var point = _avilableWirePoints[0];
         float minDistance = Vector3.Distance(_avilableWirePoints[0].transform.position, transform.position);
         float tmpDistance = 0;
-
+        
         for (int i = 0; i < _avilableWirePoints.Length; i++)
         {
             if (_avilableWirePoints[i] == null) continue;
@@ -221,25 +253,9 @@ public class PlayerBehavior : MonoBehaviour
         }
 
         if (Camera.main.WorldToScreenPoint(point.transform.position).z < 0)
-            return;
-        
-        var vec0 = transform.position - point.transform.position;
-        var vec1 = Vector3.Cross(vec0, Vector3.up);
-        var vec2 = Vector3.Cross(vec0, vec1);
-        
-        _rigidbody.AddForce(vec2.normalized * forr, ForceMode.Impulse);
+            return null;
 
-        _currentWirePoint = point.transform;
-        _lineRenderer.enabled = true;
-        _isWiring = true;
-
-        var sprjt = _currentWirePoint.GetComponent<SpringJoint>();
-        
-        _rigidbody.linearVelocity = Vector3.zero;
-
-        sprjt.connectedBody = _rigidbody;
-        sprjt.minDistance = minDistance / 2f;
-        sprjt.maxDistance = minDistance / 3f;
+        return point;
     }
 
     private void RenderWire()
