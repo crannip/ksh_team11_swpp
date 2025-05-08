@@ -10,25 +10,29 @@ public class PlayerBehavior : MonoBehaviour
     [Header("Player Properties")]
     # region player properties
     
+    [Header("Movement")]
     [SerializeField] private float acceleration;
     [SerializeField] private float deaccel;
     [SerializeField] private float dynamicDeaccel;
+    
+    [Header("Jump & Air")]
     [SerializeField] private float jumpForce;
     [SerializeField] private float doubleJumpForce;
+    [SerializeField] private float airDeaccel;
+    [SerializeField] private int jumpCount;
 
+    
+    [Header("Speed Limits")]
     [SerializeField] private float maxSpeed;
     [SerializeField] private float airMaxSpeed;
 
-    [SerializeField] private float airDeaccel;
-
+    
+    [Header("Ground Check")]
     [SerializeField] private Transform feetTransform;
-
     [SerializeField] private float groundCheckDistance;
     
+    [Header("Wire-related members")]
     [SerializeField] private float wirePointDetectRadius;
-
-    [SerializeField] private int jumpCount;
-
     [SerializeField] private float minDistanceConst, maxDistanceConst, wireSwingForce;
     # endregion
     
@@ -53,6 +57,8 @@ public class PlayerBehavior : MonoBehaviour
     # endregion
     
     /********************************************************************************/
+    /* 현재 디버깅을 위해 SerializeField 로 놔둔 것... naming convention 을 보면 알겠지만 사실 내부적으로만 쓰이느 것입니다. */
+    /* 나중에 고칠 것 */
     private Vector3 _velocity;
     [SerializeField] private bool _isGrounded;
     [SerializeField] private int _jumpCount = 0;
@@ -62,9 +68,10 @@ public class PlayerBehavior : MonoBehaviour
     [SerializeField] private Transform _currentWirePoint;
 
     [SerializeField] private GroundFriction _currentGroundOn;
-
-
-    public Material wirepointMat;
+    
+    [SerializeField] private bool _isStun;
+    [SerializeField] private float _stunTimeElapsed;
+    
     public Transform respawnPos;
 
     private void OnDrawGizmos()
@@ -91,6 +98,7 @@ public class PlayerBehavior : MonoBehaviour
     private void Update()
     {
         GroundCheck();
+        StunCheck();
         
         if (!_isWiring)
         {
@@ -122,6 +130,9 @@ public class PlayerBehavior : MonoBehaviour
     private void Move()
     {
         var input = _inputProcessor.MoveInput.normalized;
+        
+        if (_isStun) 
+            input = Vector2.zero;
     
         Vector3 direction = new Vector3(input.x, 0, input.y);
         direction = Quaternion.AngleAxis(cameraObject.transform.rotation.eulerAngles.y, Vector3.up) * direction;
@@ -137,6 +148,9 @@ public class PlayerBehavior : MonoBehaviour
                 ? (_rigidbody.linearVelocity.magnitude > airMaxSpeed ? 1 : airDeaccel)
                 : 1f);
 
+        if (_isStun)
+            airCof = airDeaccel / 2f;
+
         if (input.magnitude < 0.1f)
         {
             _rigidbody.AddForce(-velWithoutY * (airCof * groundFriction * deaccel * Time.deltaTime));
@@ -146,10 +160,27 @@ public class PlayerBehavior : MonoBehaviour
             _rigidbody.AddForce(-velWithoutY * (airCof * dynamicDeaccel * Time.deltaTime));
         }
     }
-    
 
+    private void StunCheck()
+    {
+        if (!_isStun)
+        {
+            GetComponent<MeshRenderer>().materials[0].color = Color.white;
+            return;
+        }
+
+        GetComponent<MeshRenderer>().materials[0].color = Color.red;
+        _stunTimeElapsed -= Time.deltaTime;
+        if (_stunTimeElapsed <= 0)
+        {
+            _isStun = false;
+        }
+    }
+    
     private void Jump()
     {
+        if (_isStun) return;
+        
         if (_isGrounded || _jumpCount < jumpCount)
         {
             _jumpCount++;
@@ -199,6 +230,7 @@ public class PlayerBehavior : MonoBehaviour
     { 
         var point = GetAvailableWirePoint();
 
+        if (_isStun) return;
         if (point == null) return;
         
         // 연결된 와이어를 통해 스윙하도록 힘을 준다.
@@ -256,6 +288,20 @@ public class PlayerBehavior : MonoBehaviour
             return null;
 
         return point;
+    }
+
+    public void GetHit(Vector3 knockback, float stunTime)
+    {
+        _isStun = true;
+        _stunTimeElapsed = stunTime;
+
+        if (_isWiring)
+        {
+            ToggleWireMode();
+        }
+
+        _rigidbody.linearVelocity = Vector3.zero;
+        _rigidbody.AddForce(knockback, ForceMode.Impulse);
     }
 
     private void RenderWire()
