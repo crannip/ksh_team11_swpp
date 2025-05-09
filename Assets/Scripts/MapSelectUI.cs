@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Android;
 using UnityEngine.UI;
 
 public class MapSelectUI : UIWindow
@@ -11,14 +10,28 @@ public class MapSelectUI : UIWindow
     public GameObject gameStartUI;
 
     public TextMeshProUGUI mapTitle;
+    public TextMeshProUGUI leaderBoardName;
+    public TextMeshProUGUI leaderBoardTime;
+
+    public TMP_InputField nameInput;
+    public TMP_InputField timeInput;
 
     private int currentSelectedStage = 1;
     private bool isWaiting = false;
+    private LeaderBoardManager leaderBoardManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        leaderBoardManager = FindAnyObjectByType<LeaderBoardManager>();
+        ApplyUIUpdate();
+    }
 
+    private void ApplyUIUpdate()
+    {
+        mapImageObj.GetComponent<Image>().sprite = mapImages[currentSelectedStage - 1];
+        leaderBoardName.SetText(leaderBoardManager.GetNameStr(currentSelectedStage));
+        leaderBoardTime.SetText(leaderBoardManager.GetTimeStr(currentSelectedStage));
     }
 
     public void UpdateSelectedStage(int direction)
@@ -26,9 +39,9 @@ public class MapSelectUI : UIWindow
         currentSelectedStage = (currentSelectedStage + direction);
         if (currentSelectedStage < 1) currentSelectedStage += mapImages.Count;
         if (currentSelectedStage > mapImages.Count) currentSelectedStage -= mapImages.Count;
-        mapImageObj.GetComponent<Image>().sprite = mapImages[currentSelectedStage - 1];
         isWaiting = false;
         gameStartUI.SetActive(false);
+        ApplyUIUpdate();
     }
 
     public void OnMapImageClick()
@@ -65,12 +78,25 @@ public class MapSelectUI : UIWindow
         UpdateSelectedStage(v);
     }
 
+    public void OnLeaderBoardSubmit()
+    {
+        string name = nameInput.text;
+        float time = float.Parse(timeInput.text);
+        leaderBoardManager.AddRecord(currentSelectedStage, name, time);
+        ApplyUIUpdate();
+    }
+
+    public void OnLeaderBoardClear()
+    {
+        leaderBoardManager.ClearRecords();
+        ApplyUIUpdate();
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            Debug.Log("Enter");
             OnEnterDown();
         }
         if (Input.GetKeyDown(KeyCode.LeftArrow))
