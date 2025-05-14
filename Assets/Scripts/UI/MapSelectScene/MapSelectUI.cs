@@ -16,14 +16,14 @@ public class MapSelectUI : UIWindow
     public TMP_InputField nameInput;
     public TMP_InputField timeInput;
 
-    private int currentSelectedStage = 1;
-    private bool isWaiting = false;
-    private LeaderBoardManager leaderBoardManager;
+    private int _currentSelectedStage = 1;
+    private bool _isWaiting = false;
+    private LeaderBoardManager _leaderBoardManager;
     
     protected override void Start()
     {
         base.Start();
-        leaderBoardManager = FindAnyObjectByType<LeaderBoardManager>();
+        _leaderBoardManager = FindAnyObjectByType<LeaderBoardManager>();
         
         onEnterDown.AddListener(OnEnterDown);
         onHorizontalDown.AddListener(OnHorizontalDown);
@@ -33,41 +33,41 @@ public class MapSelectUI : UIWindow
 
     private void ApplyUIUpdate()
     {
-        mapImageObj.GetComponent<Image>().sprite = mapImages[currentSelectedStage - 1];
-        leaderBoardName.SetText(leaderBoardManager.GetNameStr(currentSelectedStage));
-        leaderBoardTime.SetText(leaderBoardManager.GetTimeStr(currentSelectedStage));
+        mapImageObj.GetComponent<Image>().sprite = mapImages[_currentSelectedStage - 1];
+        leaderBoardName.SetText(_leaderBoardManager.GetNameStr(_currentSelectedStage));
+        leaderBoardTime.SetText(_leaderBoardManager.GetTimeStr(_currentSelectedStage));
     }
 
     public void UpdateSelectedStage(int direction)
     {
-        currentSelectedStage = (currentSelectedStage + direction);
-        if (currentSelectedStage < 1) currentSelectedStage += mapImages.Count;
-        if (currentSelectedStage > mapImages.Count) currentSelectedStage -= mapImages.Count;
-        isWaiting = false;
+        _currentSelectedStage = (_currentSelectedStage + direction);
+        if (_currentSelectedStage < 1) _currentSelectedStage += mapImages.Count;
+        if (_currentSelectedStage > mapImages.Count) _currentSelectedStage -= mapImages.Count;
+        _isWaiting = false;
         gameStartUI.SetActive(false);
         ApplyUIUpdate();
     }
 
     public void OnMapImageClick()
     {
-        if (!isWaiting)
+        if (!_isWaiting)
         {
-            isWaiting = true;
-            mapTitle.SetText("Stage " + currentSelectedStage);
+            _isWaiting = true;
+            mapTitle.SetText("Stage " + _currentSelectedStage);
             gameStartUI.SetActive(true);
         }
     }
 
     public void StartGame()
     {
-        Debug.Log("Stage " + currentSelectedStage + " start");
+        Debug.Log("Stage " + _currentSelectedStage + " start");
         //TODO - start game
         //SceneManager.LoadScene(...)
     }
 
     private void OnEnterDown()
     {
-        if (!isWaiting)
+        if (!_isWaiting)
         {
             OnMapImageClick();
         }
@@ -87,13 +87,13 @@ public class MapSelectUI : UIWindow
     {
         string name = nameInput.text;
         float time = float.Parse(timeInput.text);
-        leaderBoardManager.AddRecord(currentSelectedStage, name, time);
+        _leaderBoardManager.AddRecord(_currentSelectedStage, name, time);
         ApplyUIUpdate();
     }
 
     public void OnLeaderBoardClear()
     {
-        leaderBoardManager.ClearRecords();
+        _leaderBoardManager.ClearRecords();
         ApplyUIUpdate();
     }
 }

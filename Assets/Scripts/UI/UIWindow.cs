@@ -13,12 +13,12 @@ public class UIWindow : MonoBehaviour, IUIWindowObserver
 
     protected virtual void Start()
     {
-        GameManager.instance.UIManager.RegisterObserver(this);
+        GameManager.Instance.UIManager.RegisterObserver(this);
     }
 
     private void OnDestroy()
     {
-        GameManager.instance.UIManager.UnregisterObserver(this);
+        GameManager.Instance.UIManager.UnregisterObserver(this);
     }
     
 

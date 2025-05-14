@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class TitleManager : UIWindow
 {
     public List<Button> menuButtons;
-    private int currentIndex = 0;
+    private int _currentIndex = 0;
 
     protected override void Start()
     {
@@ -15,18 +15,18 @@ public class TitleManager : UIWindow
         onEnterDown.AddListener(OnEnterDown);
         onVerticalDown.AddListener(OnVerticalDown);
         
-        HighlightButton(currentIndex);
+        HighlightButton(_currentIndex);
     }
     
     private void OnEnterDown()
     {
-        menuButtons[currentIndex].onClick.Invoke();
+        menuButtons[_currentIndex].onClick.Invoke();
     }
     
     private void OnVerticalDown(int direction)
     {
-        currentIndex = (currentIndex - direction + menuButtons.Count) % menuButtons.Count;
-        HighlightButton(currentIndex);
+        _currentIndex = (_currentIndex - direction + menuButtons.Count) % menuButtons.Count;
+        HighlightButton(_currentIndex);
     }
 
     private void HighlightButton(int index)
@@ -42,7 +42,7 @@ public class TitleManager : UIWindow
     // 버튼 클릭 시 실행
     public void StartGame()
     {
-        StartCoroutine(FadeManager.Instance.FadeAndLoadScene("GameScene")); // GameScene으로 이동
+        StartCoroutine(GameManager.Instance.SceneLoadManager.FadeAndLoadScene("GameScene")); // GameScene으로 이동
     }
 
     public void Option()

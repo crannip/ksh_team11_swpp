@@ -7,7 +7,7 @@ public class SimpleObstacle : MonoBehaviour
     public float stunTime;
     private void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.tag == "Player")
+        if (other.gameObject.CompareTag("Player"))
         {
             PlayerBehavior p = other.gameObject.GetComponent<PlayerBehavior>();
             
