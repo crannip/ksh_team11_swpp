@@ -1,23 +1,20 @@
-# PR Title [Descriptive title summarizing the change]
-## Related Issue(s)
+# PR 제목 
+
+## 관련 Issue(s)
 Link or reference any related issues or tickets.
-## PR Description
-[Provide a brief summary of the changes made.]
+
+## PR 설명
+간단히 작업하신 내용을 정리해주세요!
+
 ### Changes Included
-- [ ] Added new feature(s)
-- [ ] Fixed identified bug(s)
-- [ ] Updated relevant documentation
-### Screenshots (if UI changes were made)
-Attach screenshots or GIFs of any visual changes. (Only for frontend-related changes)
+- [ ] 새로운 기능 추가
+- [ ] 버그 수정
+- [ ] 코드 리팩토링
+      
+### Screenshots 
+Attach screenshots or GIFs of any visual changes. 
+
 ### Notes for Reviewer
-Any specific instructions or points to be considered by the reviewer.
+리뷰어가 중점적으로 봐줬으면 하는 것을 적어주세요!
+
 ---
-## Reviewer Checklist
-- [ ] Code is written in clean, maintainable, and idiomatic form.
-- [ ] Automated test coverage is adequate.
-- [ ] All existing tests pass.
-- [ ] Manual testing has been performed to ensure the PR works as expected.
-- [ ] Code review comments have been addressed or clarified.
----
-## Additional Comments
-Add any other comments or information that might be useful for the review process.
