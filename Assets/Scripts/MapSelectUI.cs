@@ -19,11 +19,15 @@ public class MapSelectUI : UIWindow
     private int currentSelectedStage = 1;
     private bool isWaiting = false;
     private LeaderBoardManager leaderBoardManager;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    
+    protected override void Start()
     {
+        base.Start();
         leaderBoardManager = FindAnyObjectByType<LeaderBoardManager>();
+        
+        onEnterDown.AddListener(OnEnterDown);
+        onHorizontalDown.AddListener(OnHorizontalDown);
+        
         ApplyUIUpdate();
     }
 
@@ -61,7 +65,7 @@ public class MapSelectUI : UIWindow
         //SceneManager.LoadScene(...)
     }
 
-    void OnEnterDown()
+    private void OnEnterDown()
     {
         if (!isWaiting)
         {
@@ -73,8 +77,9 @@ public class MapSelectUI : UIWindow
         }
     }
 
-    void OnHorizontalDown(int v)
+    private void OnHorizontalDown(int v)
     {
+        Debug.Log("ASDGSAG");
         UpdateSelectedStage(v);
     }
 
@@ -90,22 +95,5 @@ public class MapSelectUI : UIWindow
     {
         leaderBoardManager.ClearRecords();
         ApplyUIUpdate();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            OnEnterDown();
-        }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            OnHorizontalDown(-1);
-        }
-        if (Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            OnHorizontalDown(1);
-        }
     }
 }

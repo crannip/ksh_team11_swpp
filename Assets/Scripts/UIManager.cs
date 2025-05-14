@@ -14,13 +14,14 @@ public class UIManager : MonoBehaviour, IUIWindowSubject
 
     private void Start()
     {
+        uiWindows = new List<IUIWindowObserver>();
+        
         _enterVisitor = new UIWindowEnterVisitor();
         _horizontalVisitor = new UIWindowHorizontalVisitor();
 
         _currentVisitor = _enterVisitor;
     }
-
-
+    
     public void RegisterObserver(IUIWindowObserver observer)
     {
         uiWindows.Add(observer);
@@ -54,9 +55,8 @@ public class UIManager : MonoBehaviour, IUIWindowSubject
         {
             float inputX = context.ReadValue<Vector2>().x;
             _horizontalVisitor.SetDirection(inputX < 0 ? -1 : 1);
-         
+
             _currentVisitor = _horizontalVisitor;
-            
             NotifyObservers();
         }
     }
