@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public class UIWindowHorizontalVisitor : UIWindowVisitor
+public class UIWindowVerticalVisitor : UIWindowVisitor
 {
-    // 1 : right, -1 : left
+    // 1 : up, -1 : down
     private int _direction;
 
     public void SetDirection(int direction)
@@ -12,8 +12,6 @@ public class UIWindowHorizontalVisitor : UIWindowVisitor
     
     public override void Visit(UIWindow window)
     {
-        Debug.Log(_direction);
-        
-            window.onHorizontalDown?.Invoke(_direction);
+        window.onVerticalDown?.Invoke(_direction);
     }
 }

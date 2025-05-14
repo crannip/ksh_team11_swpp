@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour, IUIWindowSubject
     
     private UIWindowEnterVisitor _enterVisitor;
     private UIWindowHorizontalVisitor _horizontalVisitor;
+    private UIWindowVerticalVisitor _verticalVisitor;
 
     private void Start()
     {
@@ -18,6 +19,7 @@ public class UIManager : MonoBehaviour, IUIWindowSubject
         
         _enterVisitor = new UIWindowEnterVisitor();
         _horizontalVisitor = new UIWindowHorizontalVisitor();
+        _verticalVisitor = new UIWindowVerticalVisitor();
 
         _currentVisitor = _enterVisitor;
     }
@@ -57,6 +59,18 @@ public class UIManager : MonoBehaviour, IUIWindowSubject
             _horizontalVisitor.SetDirection(inputX < 0 ? -1 : 1);
 
             _currentVisitor = _horizontalVisitor;
+            NotifyObservers();
+        }
+    }
+    
+    public void OnVertical(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            float inputY = context.ReadValue<Vector2>().y;
+            _horizontalVisitor.SetDirection(inputY < 0 ? -1 : 1);
+
+            _currentVisitor = _verticalVisitor;
             NotifyObservers();
         }
     }
