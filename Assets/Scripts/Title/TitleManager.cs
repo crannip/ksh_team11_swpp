@@ -3,32 +3,30 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-public class TitleManager : MonoBehaviour
+public class TitleManager : UIWindow
 {
     public List<Button> menuButtons;
     private int currentIndex = 0;
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
+        
+        onEnterDown.AddListener(OnEnterDown);
+        onVerticalDown.AddListener(OnVerticalDown);
+        
         HighlightButton(currentIndex);
     }
-
-    private void Update()
+    
+    private void OnEnterDown()
     {
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            currentIndex = (currentIndex + 1) % menuButtons.Count;
-            HighlightButton(currentIndex);
-        }
-        else if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            currentIndex = (currentIndex - 1 + menuButtons.Count) % menuButtons.Count;
-            HighlightButton(currentIndex);
-        }
-        else if (Input.GetKeyDown(KeyCode.Return))
-        {
-            menuButtons[currentIndex].onClick.Invoke();
-        }
+        menuButtons[currentIndex].onClick.Invoke();
+    }
+    
+    private void OnVerticalDown(int direction)
+    {
+        currentIndex = (currentIndex - direction + menuButtons.Count) % menuButtons.Count;
+        HighlightButton(currentIndex);
     }
 
     private void HighlightButton(int index)
