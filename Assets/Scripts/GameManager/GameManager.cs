@@ -3,20 +3,21 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance;
+    public static GameManager Instance;
     
     public UIManager UIManager { get; private set; }
     public DataManager DataManager { get; private set; }
+    public SceneLoadManager SceneLoadManager { get; private set; }
     
     private void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
         
-        instance = this;
+        Instance = this;
         
         DontDestroyOnLoad(gameObject);
     }
@@ -25,5 +26,6 @@ public class GameManager : MonoBehaviour
     {
         UIManager = GetComponentInChildren<UIManager>();
         DataManager = GetComponentInChildren<DataManager>();
+        SceneLoadManager = GetComponentInChildren<SceneLoadManager>();
     }
 }
