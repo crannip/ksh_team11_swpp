@@ -56,6 +56,9 @@ public class UIManager : MonoBehaviour, IUIWindowSubject
         if (context.started)
         {
             float inputX = context.ReadValue<Vector2>().x;
+
+            if (inputX == 0) return;
+            
             _horizontalVisitor.SetDirection(inputX < 0 ? -1 : 1);
 
             _currentVisitor = _horizontalVisitor;
@@ -67,8 +70,10 @@ public class UIManager : MonoBehaviour, IUIWindowSubject
     {
         if (context.started)
         {
-            Debug.Log("HERE");
             float inputY = context.ReadValue<Vector2>().y;
+
+            if (inputY == 0) return;
+            
             _verticalVisitor.SetDirection(inputY < 0 ? -1 : 1);
 
             _currentVisitor = _verticalVisitor;
