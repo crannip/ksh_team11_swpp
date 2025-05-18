@@ -57,20 +57,18 @@ public class PlayerBehavior : MonoBehaviour
     # endregion
     
     /********************************************************************************/
-    /* 현재 디버깅을 위해 SerializeField 로 놔둔 것... naming convention 을 보면 알겠지만 사실 내부적으로만 쓰이느 것입니다. */
-    /* 나중에 고칠 것 */
     private Vector3 _velocity;
-    [SerializeField] private bool _isGrounded;
-    [SerializeField] private int _jumpCount = 0;
+    private bool _isGrounded;
+    private int _jumpCount = 0;
 
-    [SerializeField] private bool _isWiring = false;
-    [SerializeField] private Collider[] _avilableWirePoints = new Collider[10];
-    [SerializeField] private Transform _currentWirePoint;
+    private bool _isWiring = false;
+    private Collider[] _avilableWirePoints = new Collider[10];
+    private Transform _currentWirePoint;
 
-    [SerializeField] private GroundFriction _currentGroundOn;
+    private GroundFriction _currentGroundOn;
     
-    [SerializeField] private bool _isStun;
-    [SerializeField] private float _stunTimeElapsed;
+    private bool _isStun;
+    private float _stunTimeElapsed;
     
     public Transform respawnPos;
 
